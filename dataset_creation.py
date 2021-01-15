@@ -3,12 +3,12 @@ from pydub.playback import play
 import os 
 import random
 import string
+import pandas as pd 
 
 def get_random_string(length):
     letters = string.ascii_lowercase
     result_str = ''.join(random.choice(letters) for i in range(length))
     return result_str
-
 
 def AddAmbientSound(path, ):
     print("TODO")
@@ -28,26 +28,33 @@ def ReadDataset(location, level):
     print("Found " + str(counter) + " Files")
     return paths
 
-
 def CreateCrossFade( paths, minCrossfade, maxCrossfade ):
     mixedFile = None
     for path in paths:
-        chance = random.randint(0, 100) 
+        chance = random.randint(0, 100)
         file = AudioSegment.from_file( path, "flac" )
-        
         if mixedFile is not None:
-            if chance > 50: 
-                mixedFile.append(file, crossfade=random.randint(minCrossfade, maxCrossfade))
-            else:
-                mixedFile = file + mixedFile
+            if chance > 50:
+                if (file.duration_seconds * 1000) > 1000: 
+                    fadeIn = 1000
+                else: 
+                    fadeIn = 0
 
-        mixedFile = file 
+                mixedFile = mixedFile.append(file, crossfade=fadeIn)
+            else:
+                mixedFile = mixedFile + file
+
+        else:
+            mixedFile = file
+
+            
 
     return mixedFile
 
-def exportSamples( files ):
-    for file in files:
-        file.export(random.choice() + '.mp3', format="mp3")
+def exportSample( file ):
+    name = get_random_string(8) + '.mp3'
+    file.export('./Exports/' + name, format="mp3")
+    return name
 
 # Takes an array of sound path and creates a random crossfade 
 # with random time interval
@@ -58,7 +65,8 @@ def exportSamples( files ):
 # mixCrossfade, maxCrossfade = min max crossfade time
 def CreateSamples( paths, samplesToCreate, numberOfPersons, bufferCount, minCrossfade, maxCrossfade ):
     counterOther, counterMain, state = 0, 0, 0
-    generatedFiles = []
+    generatedFiles, personCount, filesAppended, samples = [], [], [], []
+
     for i in range(samplesToCreate):
         samplesToTake = random.randint(1, numberOfPersons + bufferCount)
         if samplesToTake > numberOfPersons: counterOther = counterOther + 1
@@ -70,14 +78,26 @@ def CreateSamples( paths, samplesToCreate, numberOfPersons, bufferCount, minCros
         state = state + samplesToTake
         
         generatedFiles.append( CreateCrossFade(slicedFiles, minCrossfade, maxCrossfade) )
-
+        personCount.append(samplesToTake)
+        filesAppended.append(','.join(slicedFiles))
 
     print("Other " + str( counterOther ))
     print("Main " +  str( counterMain ))
-    return generatedFiles
+    
+    for index, file in enumerate(generatedFiles):
+        sample = {}
+        sample['name'] = exportSample(file)
+        sample['class'] = personCount[index]
+        sample['files'] = filesAppended[index]
+        samples.append(sample)
+    
+    df = pd.DataFrame(samples)
+    df.to_csv('./Exports/description.csv')    
+
 
 
 paths = ReadDataset('Dataset', 2)
-samples = CreateSamples(paths, 20, 5, 2, 0, 3)
-exportSamples(samples)
+CreateSamples(paths, 20000, 5, 2, 0, 4)
 
+# file = AudioSegment.from_file( '36a2c0f7dc.flac', "flac" )
+# print( file.duration_seconds )
