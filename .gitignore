@@ -1,4 +1,6 @@
 *.mp3
 /Dataset
+/Exports
 /audio-signal
 *.flac
+*.json

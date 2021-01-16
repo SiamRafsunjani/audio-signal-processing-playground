@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 FIG_SIZE = (15,10)
 
-file = "blues.00000.wav"
+file = "36a2c0f7dc.flac"
 
 # load audio file with Librosa
 signal, sample_rate = librosa.load(file, sr=22050)
