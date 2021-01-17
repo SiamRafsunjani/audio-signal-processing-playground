@@ -19,15 +19,12 @@ def save_mfcc(dataset_path, json_path, num_mfcc=7, n_fft=2048, hop_length=1024, 
     }
 
     labels = pd.read_csv(LABEL_PATH)
-    
-    print(labels.loc[labels['name'] == 'lwmxjcxc.mp3'])
-
     counter = 0
     for root, dirs, files in os.walk(dataset_path):
         if root is dataset_path:
             for file in files:                
                 counter = counter + 1
-                # if counter is 2: break 
+                if counter > 1000: break 
 
                 file_path = os.path.join(root, file)
                 signal, sample_rate = librosa.load(file_path, sr=None)
@@ -35,12 +32,9 @@ def save_mfcc(dataset_path, json_path, num_mfcc=7, n_fft=2048, hop_length=1024, 
                 mfcc = mfcc.T
 
                 print(counter)
-                print(file)
-                print(len(mfcc))
 
                 data["mfcc"].append([mfcc.tolist()])
                 data["labels"].append(int( labels.loc[labels['name'] == file]['class'] ) )
-
 
     # save MFCCs to json file
     with open(json_path, "w") as fp:
