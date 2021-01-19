@@ -24,7 +24,7 @@ def save_mfcc(dataset_path, json_path, num_mfcc=7, n_fft=2048, hop_length=1024, 
         if root is dataset_path:
             for file in files:                
                 counter = counter + 1
-                if counter > 1000: break 
+                if counter > 40000: break 
 
                 file_path = os.path.join(root, file)
                 signal, sample_rate = librosa.load(file_path, sr=None)

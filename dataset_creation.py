@@ -47,8 +47,6 @@ def CreateCrossFade( paths, minCrossfade, maxCrossfade ):
         else:
             mixedFile = file
 
-            
-
     return mixedFile
 
 def exportSample( file ):
@@ -97,7 +95,7 @@ def CreateSamples( paths, samplesToCreate, numberOfPersons, bufferCount, minCros
 
 
 paths = ReadDataset('Dataset', 2)
-CreateSamples(paths, 20000, 5, 2, 0, 4)
+CreateSamples(paths, 40000, 5, 2, 0, 4)
 
 # file = AudioSegment.from_file( '36a2c0f7dc.flac', "flac" )
 # print( file.duration_seconds )
